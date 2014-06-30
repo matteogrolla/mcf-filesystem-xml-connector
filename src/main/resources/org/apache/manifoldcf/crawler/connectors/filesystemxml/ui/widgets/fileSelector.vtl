@@ -1,0 +1,138 @@
+#macro(fileSelector $id, $editable, $value)
+
+    #if($TABNAME == $ResourceBundle.getString('FileConnector.Paths'))
+    <table id="$id" class="formtable">
+        <thead>
+        <tr class="formheaderrow">
+            <td class="formcolumnheader">
+            </td>
+            <td class="formcolumnheader">
+                <nobr>Root path</nobr>
+            </td>
+            <td class="formcolumnheader">
+                <nobr>
+                    Convert path to URI?
+                    <br>
+                    (e.g. http/xyz/index.html => http://xyz/index.html)
+                </nobr>
+            </td>
+            <td class="formcolumnheader">
+                <nobr>Rules</nobr>
+            </td>
+        </tr>
+        </thead>
+        <tbody id="${id}_rootPathContainer">
+
+        </tbody>
+        <tfoot>
+        <tr class="formrow editMode">
+            <td class="formcolumncell">
+                <input id="${id}_addPath" type="button" value="Add">
+            </td>
+            <td class="formcolumncell">
+                <input id="${id}_pathValue" type="text" value="" size="30">
+            </td>
+            <td class="formcolumncell">
+                <input id="${id}_convertPathToUri" type="checkbox" value="true">
+            </td>
+            <td class="formcolumncell"></td>
+        </tr>
+        </tfoot>
+
+        <!-- Template for rootPath -->
+        <tr id="${id}_rootPathTemplate" class="evenformrow rootPath" style="display:none">
+            <td class="formcolumncell">
+                <input class="deletePath editMode" type="button" value="Delete">
+            </td>
+            <td class="formcolumncell pathValue">
+                /Users/matteogrolla/Development/alf_sourcesense/workspace_sole24ore/branches/solr4-dev/mcf-filesystem-xml-connector/src/test/resources/dirsToIndex/addCommandsDir
+            </td>
+            <td class="formcolumncell convertPathToUri">
+                No
+            </td>
+            <td class="boxcell">
+                <table class="formtable filterWidget">
+                    <thead>
+                    <tr class="formheaderrow">
+                        <td class="formcolumnheader"></td>
+                        <td class="formcolumnheader">
+                            <nobr>Include/exclude</nobr>
+                        </td>
+                        <td class="formcolumnheader">
+                            <nobr>File/directory</nobr>
+                        </td>
+                        <td class="formcolumnheader">
+                            <nobr>Match</nobr>
+                        </td>
+                    </tr>
+                    </thead>
+
+                    <tbody class="filterContainer">
+                    </tbody>
+                    <tfoot>
+                    <tr class="formrow editMode">
+                        <td class="formcolumncell">
+                            <input type="button" class="addFilter" alt="Add a new match for path" value="Add">
+                        </td>
+                        <td class="formcolumncell">
+                            <nobr>
+                                <select class="action">
+                                    <option value="include">include</option>
+                                    <option value="exclude">exclude</option>
+                                </select>
+                            </nobr>
+                        </td>
+                        <td class="formcolumncell">
+                            <nobr>
+                                <select class="object">
+                                    <option value="file">File</option>
+                                    <option value="directory">Directory</option>
+                                </select>
+                            </nobr>
+                        </td>
+                        <td class="formcolumncell">
+                            <nobr>
+                                <input class="match" type="text" value="" size="10">
+                            </nobr>
+                        </td>
+                    </tr>
+                    </tfoot>
+
+                    <!-- Template for filter -->
+                    <tr id="${id}_filterTemplate" class="evenformrow filterRow" style="display:none">
+                        <td class="formcolumncell">
+                            <input class="deleteFilter editMode" type="button" alt="Delete path" value="Delete">
+                        </td>
+                        <td class="formcolumncell action">
+
+                        </td>
+                        <td class="formcolumncell object">
+
+                        </td>
+                        <td class="formcolumncell match">
+
+                        </td>
+                    </tr>
+                </table>
+            <td>
+            </td>
+        </tr>
+
+    </table>
+
+    <textarea id="${id}_value" name="${id}_value">$value</textarea>
+
+    before script
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript">
+        #include("widgets/fileSelector.js")
+        $(document).ready(function(){
+            fileSelector = new window.mcf.widgets.FileSelector('$id', $editable);
+        });
+    </script>
+
+    #else
+    <!-- <input type="text" value="">-->
+    <input type="hidden" id="${id}_value">
+    #end
+#end

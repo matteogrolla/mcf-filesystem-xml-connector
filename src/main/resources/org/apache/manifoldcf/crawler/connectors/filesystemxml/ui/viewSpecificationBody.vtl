@@ -1,0 +1,23 @@
+#parse("widgets/fileSelector.vtl")
+
+#set( $id="fileSelector")
+##[{"path":"pathA","convertPathToUri":false,"filters":[{"action":"include","object":"file","match":"*"},{"action":"include","object":"directory","match":"*"}]}]'
+#set( $value="$FILESELECTORVALUE")
+
+
+<table class="displaytable">
+    <tbody>
+    <tr>
+        <td class="separator" colspan="3">
+            <hr>
+        </td>
+    </tr>
+    <tr>
+        <td class="description">
+            <nobr>Repository Paths:</nobr>
+        </td>
+        <td class="boxcell">
+            #fileSelector($id, false, $value)
+        </td>
+    </tr>
+</table>

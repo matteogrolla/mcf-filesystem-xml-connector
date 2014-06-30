@@ -1,0 +1,18 @@
+[
+    {
+        "path": "/fdfsds",
+        "convertPathToUri": false,
+        "filters": [
+            {
+                "action": "include",
+                "object": "file",
+                "match": "*"
+            },
+            {
+                "action": "include",
+                "object": "folder",
+                "match": "*"
+            }
+        ]
+    }
+]
