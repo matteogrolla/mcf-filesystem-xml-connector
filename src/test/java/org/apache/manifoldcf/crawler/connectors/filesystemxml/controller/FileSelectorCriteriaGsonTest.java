@@ -31,20 +31,23 @@ public class FileSelectorCriteriaGsonTest {
     List<FileSelectorCriteria> criterias = new ArrayList<FileSelectorCriteria>();
     criterias.add(criteria);
 
-    String json = ConnectorControllerImpl.serializeFileSelectorCriterias(criterias);
+    String json = FileSelectorCriteria.serializeFileSelectorCriterias(criterias);
 
-    assertEquals("[{\"path\":\"pathA\",\"filters\":[{\"action\":\"INCLUDE\",\"object\":\"FILE\",\"match\":\"*\"}]}]", json);
+    assertEquals("[{\"path\":\"pathA\",\"filters\":[{\"action\":\"include\",\"object\":\"file\",\"match\":\"*\"}]}]", json);
   }
 
   @Test
   public void testDeserialization(){
-    String json = "[{\"path\":\"pathA\",\"filters\":[{\"action\":\"INCLUDE\",\"object\":\"FILE\",\"match\":\"*\"}]}]";
+    String json = "[{\"path\":\"pathA\",\"filters\":[{\"action\":\"include\",\"object\":\"file\",\"match\":\"*\"}]}]";
 
-    List<FileSelectorCriteria> criterias = ConnectorControllerImpl.deserializeFileSelectorCriterias(json);
+    List<FileSelectorCriteria> criterias = FileSelectorCriteria.deserializeFileSelectorCriterias(json);
 
     FileSelectorCriteria criteria = criterias.get(0);
     assertEquals("pathA", criteria.path);
     FileSelectorCriteria.Filter filter = criteria.filters.get(0);
     assertEquals("*", filter.match);
+    assertEquals(FileSelectorCriteria.Filter.Action.INCLUDE, filter.action);
+    assertEquals(FileSelectorCriteria.Filter.FilterObject.FILE, filter.object);
   }
+
 }

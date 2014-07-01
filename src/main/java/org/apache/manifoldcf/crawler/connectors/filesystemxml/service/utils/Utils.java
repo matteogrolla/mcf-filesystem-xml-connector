@@ -3,6 +3,7 @@ package org.apache.manifoldcf.crawler.connectors.filesystemxml.service.utils;
 import org.apache.manifoldcf.core.extmimemap.ExtensionMimeMap;
 import org.apache.manifoldcf.core.interfaces.ManifoldCFException;
 import org.apache.manifoldcf.core.interfaces.SpecificationNode;
+import org.apache.manifoldcf.crawler.connectors.filesystemxml.domain.FileSelectorCriteria;
 import org.apache.manifoldcf.crawler.interfaces.DocumentSpecification;
 import org.apache.manifoldcf.crawler.system.Logging;
 
@@ -10,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Locale;
 
 /**

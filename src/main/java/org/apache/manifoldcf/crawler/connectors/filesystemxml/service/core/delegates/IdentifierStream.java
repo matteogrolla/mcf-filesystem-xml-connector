@@ -3,12 +3,14 @@ package org.apache.manifoldcf.crawler.connectors.filesystemxml.service.core.dele
 import org.apache.manifoldcf.agents.interfaces.ServiceInterruption;
 import org.apache.manifoldcf.core.interfaces.ManifoldCFException;
 import org.apache.manifoldcf.core.interfaces.SpecificationNode;
+import org.apache.manifoldcf.crawler.connectors.filesystemxml.domain.FileSelectorCriteria;
 import org.apache.manifoldcf.crawler.interfaces.DocumentSpecification;
 import org.apache.manifoldcf.crawler.interfaces.IDocumentIdentifierStream;
 import org.apache.manifoldcf.crawler.system.Logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 
 /** Document identifier stream.
@@ -18,39 +20,23 @@ public class IdentifierStream implements IDocumentIdentifierStream
   protected String[] ids = null;
   protected int currentIndex = 0;
 
-  public IdentifierStream(DocumentSpecification spec)
+  public IdentifierStream(List<FileSelectorCriteria> criterias)
       throws ManifoldCFException
   {
     try
     {
       // Walk the specification for the "startpoint" types.  Amalgamate these into a list of strings.
       // Presume that all roots are startpoint nodes
-      int i = 0;
-      int j = 0;
-      while (i < spec.getChildCount())
-      {
-        SpecificationNode n = spec.getChild(i);
-        if (n.getType().equals("startpoint"))
-          j++;
-        i++;
-      }
-      ids = new String[j];
-      i = 0;
-      j = 0;
-      while (i < ids.length)
-      {
-        SpecificationNode n = spec.getChild(i);
-        if (n.getType().equals("startpoint"))
+      ids = new String[criterias.size()];
+      int j=0;
+      for (FileSelectorCriteria criteria: criterias){
+        // The id returned MUST be in canonical form!!!
+        ids[j] = new File(criteria.path).getCanonicalPath();
+        if (Logging.connectors.isDebugEnabled())
         {
-          // The id returned MUST be in canonical form!!!
-          ids[j] = new File(n.getAttributeValue("path")).getCanonicalPath();
-          if (Logging.connectors.isDebugEnabled())
-          {
-            Logging.connectors.debug("Seed = '"+ids[j]+"'");
-          }
-          j++;
+          Logging.connectors.debug("Seed = '"+ids[j]+"'");
         }
-        i++;
+        j++;
       }
     }
     catch (IOException e)

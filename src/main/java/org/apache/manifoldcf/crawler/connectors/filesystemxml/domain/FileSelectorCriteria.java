@@ -1,5 +1,10 @@
 package org.apache.manifoldcf.crawler.connectors.filesystemxml.domain;
 
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +30,30 @@ public class FileSelectorCriteria {
       this.match = match;
     }
 
-    public enum Action {INCLUDE, EXCLUDE};
-    public enum FilterObject {FILE, DIRECTORY};
+    public enum Action {
+      @SerializedName("include")
+      INCLUDE,
+      @SerializedName("exclude")
+      EXCLUDE};
+    public enum FilterObject {
+      @SerializedName("file")
+      FILE,
+      @SerializedName("directory")
+      DIRECTORY};
 
   }
+
+  public static String serializeFileSelectorCriterias(List<FileSelectorCriteria> criterias){
+    Gson gson = new Gson();
+    String json = gson.toJson(criterias);
+    return json;
+  }
+
+  public static List<FileSelectorCriteria> deserializeFileSelectorCriterias(String json){
+    Gson gson = new Gson();
+    Type criteriasType = new TypeToken<List<FileSelectorCriteria>>(){}.getType();
+    List<FileSelectorCriteria> criterias = gson.fromJson(json, criteriasType);
+    return criterias;
+  }
+
 }

@@ -6,6 +6,7 @@ import org.apache.manifoldcf.agents.interfaces.ServiceInterruption;
 import org.apache.manifoldcf.core.interfaces.ManifoldCFException;
 import org.apache.manifoldcf.crawler.connectors.filesystemxml.FileConnector;
 import org.apache.manifoldcf.crawler.connectors.filesystemxml.controller.ConnectorControllerImpl;
+import org.apache.manifoldcf.crawler.connectors.filesystemxml.domain.DocumentSpecificationWrapper;
 import org.apache.manifoldcf.crawler.connectors.filesystemxml.domain.FileSelectorCriteria;
 import org.apache.manifoldcf.crawler.connectors.filesystemxml.service.core.delegates.IdentifierStream;
 import org.apache.manifoldcf.crawler.connectors.filesystemxml.domain.SerializableRepositoryDocument;
@@ -40,7 +41,9 @@ public class CrawlingServiceImpl implements CrawlingService {
   @Override
   public IDocumentIdentifierStream getDocumentIdentifiers(DocumentSpecification spec, long startTime, long endTime)
       throws ManifoldCFException {
-    return new IdentifierStream(spec);
+    DocumentSpecificationWrapper dsw = new DocumentSpecificationWrapper(spec);
+    List<FileSelectorCriteria> criterias = FileSelectorCriteria.deserializeFileSelectorCriterias(dsw.getFileSelectionValue());
+    return new IdentifierStream(criterias);
   }
 
   @Override
@@ -77,7 +80,11 @@ public class CrawlingServiceImpl implements CrawlingService {
         }
       } else {
         //it's a solr document
-        //TODO ?? "" -> versioning is not handled?
+        /*
+          FIXME versioning for documents in xml file
+            If I understood correctly returning "" means that MCF will always process the document.
+            If so then it's OK.
+         */
         rval[i] = "";
       }
       i++;
@@ -89,8 +96,9 @@ public class CrawlingServiceImpl implements CrawlingService {
   public void processDocuments(String[] documentIdentifiers, String[] versions, IProcessActivity activities, DocumentSpecification spec, boolean[] scanOnly)
       throws ManifoldCFException, ServiceInterruption {
 
-    String fileSelectorValue = spec.getChild(0).getValue();
-    List<FileSelectorCriteria> fileSelectorCriterias = ConnectorControllerImpl.deserializeFileSelectorCriterias(fileSelectorValue);
+    DocumentSpecificationWrapper dsw = new DocumentSpecificationWrapper(spec);
+    String fileSelectorValue = dsw.getFileSelectionValue();
+    List<FileSelectorCriteria> fileSelectorCriterias = FileSelectorCriteria.deserializeFileSelectorCriterias(fileSelectorValue);
 
     int i = 0;
     while (i < documentIdentifiers.length) {
@@ -193,6 +201,30 @@ public class CrawlingServiceImpl implements CrawlingService {
         document.setModifiedDate(new Date(file.lastModified()));
         document.setBinary(new NullInputStream(0), 0);
 
+        /*
+          FIXME: carrydown values
+            serializing the documents seems a quick way to reach the goal
+            what is the size limit for this data in the sql table?
+
+            PROPOSAL
+            What I'd really like is avoiding the use of a db table for carrydown data and keep them in memory
+            something like:
+              MCF starts processing File A
+              docs A1, A2, ... AN are added to the queue
+              MCF starts processing File B
+              docs B1, B2, ... are added to the queue
+              and so on...
+              as soon as all docs A1..AN have been processed, A is considered processed
+              in case of failure (manifold is restarted in the middle of a crawl)
+                all files (A, B...) should be reprocessed
+              the size of the queue should be bounded
+                once filled MCF should stop processing files untill more docs are processed
+
+            MOTIVATION
+            -I'd like to avoid putting pressure on the db if possible, so that it doesn't become a concern in production
+            -performance
+
+          */
         String dataNames[] = {"data"};
         String dataValues[][] = {{SerializableRepositoryDocument.serializeDocument(document)}};
 
