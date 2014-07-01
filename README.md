@@ -12,6 +12,12 @@ The code is not currently usable for production
 (it's not well tested, and generally no effort has been spent to make it robust)
 
 
+--How to Test--
+
+Add a root path to a folder containing solrxml documents and run a crawl
+Probably the quickest way is using files in solr exampledocs folder 
+
+
 --Proposals--
 
 -Simplify UI development-
